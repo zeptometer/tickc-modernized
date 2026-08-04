@@ -1,0 +1,27 @@
+extern int printf();
+
+void cspec
+mkdot(int row[], int length)
+{
+    int index;
+    int cspec sum = `0;
+    int * vspec column = param(int *, 0);
+
+    for (index = 0; index < length; index++) {
+        if (row[index] != 0)
+            sum = `((@column)[$index] * $row[index] + @sum);
+    }
+    return `{ return @sum; };
+}
+
+int
+main(void)
+{
+    int row[4] = { 2, 0, -3, 4 };
+    int column[4] = { 5, 6, 7, 8 };
+    int (*dot)(int *) = compile(mkdot(row, 4), int);
+
+    printf("%d\n", (*dot)(column));
+    decompile(dot);
+    return 0;
+}

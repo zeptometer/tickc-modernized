@@ -1,0 +1,66 @@
+extern int printf();
+extern long reference_integer_variadic(int, ...);
+extern double reference_floating_variadic(int, ...);
+
+void cspec
+make_integer_caller(void)
+{
+    long vspec a = param(long, 0);
+    long vspec b = param(long, 1);
+    long vspec c = param(long, 2);
+    long vspec d = param(long, 3);
+    long vspec e = param(long, 4);
+    long vspec f = param(long, 5);
+    long vspec g = param(long, 6);
+    long vspec h = param(long, 7);
+
+    return `{
+        return reference_integer_variadic(8, @a, @b, @c, @d,
+                                           @e, @f, @g, @h);
+    };
+}
+
+void cspec
+make_floating_caller(void)
+{
+    float vspec a = param(float, 0);
+    float vspec b = param(float, 1);
+    float vspec c = param(float, 2);
+    float vspec d = param(float, 3);
+    float vspec e = param(float, 4);
+    float vspec f = param(float, 5);
+    float vspec g = param(float, 6);
+    float vspec h = param(float, 7);
+    float vspec i = param(float, 8);
+    float vspec j = param(float, 9);
+
+    return `{
+        return reference_floating_variadic(10, @a, @b, @c, @d, @e,
+                                            @f, @g, @h, @i, @j);
+    };
+}
+
+int
+main(void)
+{
+    long (*integer_caller)(long, long, long, long,
+                           long, long, long, long);
+    double (*floating_caller)(float, float, float, float, float,
+                              float, float, float, float, float);
+
+    integer_caller = (long (*)(long, long, long, long,
+                               long, long, long, long))
+                     compile(make_integer_caller(), long);
+    floating_caller = (double (*)(float, float, float, float, float,
+                                  float, float, float, float, float))
+                      compile(make_floating_caller(), double);
+    if (integer_caller(1, 2, 3, 4, 5, 6, 7, 8) != 36)
+        return 1;
+    if (floating_caller(1.0, 2.0, 3.0, 4.0, 5.0,
+                        6.0, 7.0, 8.0, 9.0, 10.0) != 55.0)
+        return 1;
+    decompile(integer_caller);
+    decompile(floating_caller);
+    printf("Phase 6C Tick-C tests passed\n");
+    return 0;
+}

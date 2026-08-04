@@ -1,0 +1,68 @@
+This is the distribution for tcc-1.0b9, a compiler for `C (Tick-C).
+
+
+This software is based on lcc, a retargetable compiler for ANSI C described in
+the book `A Retargetable C Compiler: Design and Implementation' (Benjamin
+Cummings, 1995, ISBN 0-8053-1670-1).  The authors of lcc are Chris Fraser and
+David Hanson.  See doc/original-lcc for information about the original lcc
+compiler.
+
+The original vcode system was the work of Dawson Engler. The archived
+vcode-x86 implementation was written by Tom Pinckney. The copt peephole
+optimizer was written by Chris Fraser.
+
+tcc is provided under the same conditions as lcc: it is available free for your
+personal research and instructional use under the `fair use' provisions of the
+copyright law.  See doc/original-lcc/COPYRIGHT.lcc for more information.
+
+This modernized repository contains multiple license and provenance classes.
+Read LICENSE.md and NOTICE before copying or redistributing the tree. The
+repository must not be described as uniformly MIT-licensed, GPL-licensed, or
+OSI-approved open source.
+
+This modernization is maintained for research and instruction and is intended
+for free, source-only distribution. It inherits the lcc conditions, including
+their restrictions on sale and profit-making use. Commercial use or sale is
+not granted by the modernization's MIT-licensed additions. Report bugs in this
+modernized version to this repository, not to the original lcc authors.
+
+
+To install tcc, read the INSTALL file in this directory.
+
+Contents:
+
+* INSTALL		installation directions
+* Makefile.in		source for Makefile, used in the configure process
+* README		this file
+* bin			directory where binaries should go
+* build			directory for doing builds (builds for different
+			architectures can live side-by-side)
+* config		source for the configure script (input to autoconf)
+	 sys		platform-dependent files needed by the front-end
+			(see INSTALL)
+* configure		the configuration script (see INSTALL)
+* doc			documentation (including man pages)
+	Credits		people who have helped with tcc
+	ChangeLog	change log (maintained as of 1.0b5)
+* include		header files used by the native x86-64/Linux target
+* lib			where libraries and executables run by tcc should go
+* src			sources
+	bpo		a binary peephole optimizer (runs at dynamic compile
+			time)
+	copt		a text peephole optimizer (runs at static compile time)
+	icode		a relatively high-level dynamic code gen system
+	lburg		a code generator generator
+	rcc		the `C static compiler
+	rts		the `C run-time system
+	sup		common support code for vcode, icode, and rts
+	tcc		the driver that invokes each compilation phase
+	vcode-x86_64	the native low-level dynamic code generator for x86-64
+* tst			test suites
+
+
+All bug reports, suggestions, and other comments should be addressed to
+maxp@lcs.mit.edu.
+
+
+
+Massimiliano Poletto / maxp@lcs.mit.edu / Jul 9, 1998

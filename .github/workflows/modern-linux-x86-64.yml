@@ -1,0 +1,34 @@
+name: Modern Linux x86-64
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '23 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  required-quality:
+    name: Debian Trixie amd64 / ${{ matrix.profile }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [debug, optimized, sanitizer]
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build and run ${{ matrix.profile }} tests
+        run: env/linux-x86_64/scripts/run-tests.sh "${{ matrix.profile }}"
+
+  valgrind:
+    name: Debian Trixie amd64 / Valgrind
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build and run memory checks
+        run: env/linux-x86_64/scripts/run-tests.sh valgrind

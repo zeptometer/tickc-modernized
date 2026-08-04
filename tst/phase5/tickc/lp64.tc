@@ -1,0 +1,47 @@
+extern int printf();
+
+void cspec
+make_identity(void)
+{
+    long vspec value = param(long, 0);
+
+    return `{ return @value; };
+}
+
+void cspec
+make_transform(void)
+{
+    long vspec value = param(long, 0);
+
+    return `{ return (@value + 1099511627776L) * 3; };
+}
+
+void cspec
+make_pointer_identity(void)
+{
+    void * vspec value = param(void *, 0);
+
+    return `{ return @value; };
+}
+
+int
+main(void)
+{
+    long input = ((long)1 << 40) + 7;
+    long (*identity)(long) = compile(make_identity(), long);
+    long (*transform)(long) = compile(make_transform(), long);
+    void *(*pointer_identity)(void *) =
+        compile(make_pointer_identity(), void *);
+    long output = identity(input);
+    long transformed = transform(input);
+    void *pointer = pointer_identity(&input);
+
+    printf("%ld %ld %ld %d\n", input, output, transformed,
+           pointer == &input);
+    decompile(identity);
+    decompile(transform);
+    decompile(pointer_identity);
+    return output != input ||
+           transformed != (input + 1099511627776L) * 3 ||
+           pointer != &input;
+}

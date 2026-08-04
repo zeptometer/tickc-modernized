@@ -1,0 +1,144 @@
+extern int printf();
+extern double reference_mixed(long, double, float, double, float, double,
+                              float, double, float, double, float, long);
+
+void cspec
+make_arithmetic(void)
+{
+    long vspec first = param(long, 0);
+    double vspec a = param(double, 1);
+    float vspec b = param(float, 2);
+    double vspec c = param(double, 3);
+    float vspec d = param(float, 4);
+    double vspec e = param(double, 5);
+    float vspec f = param(float, 6);
+    double vspec g = param(double, 7);
+    float vspec h = param(float, 8);
+    double vspec i = param(double, 9);
+    float vspec j = param(float, 10);
+    long vspec last = param(long, 11);
+
+    return `{
+        return (double)@first + @a + @b + @c + @d + @e + @f + @g +
+               @h + @i + @j + (double)@last;
+    };
+}
+
+void cspec
+make_caller(void)
+{
+    long vspec first = param(long, 0);
+    double vspec a = param(double, 1);
+    float vspec b = param(float, 2);
+    double vspec c = param(double, 3);
+    float vspec d = param(float, 4);
+    double vspec e = param(double, 5);
+    float vspec f = param(float, 6);
+    double vspec g = param(double, 7);
+    float vspec h = param(float, 8);
+    double vspec i = param(double, 9);
+    float vspec j = param(float, 10);
+    long vspec last = param(long, 11);
+
+    return `{
+        return reference_mixed(@first, @a, @b, @c, @d, @e, @f, @g,
+                               @h, @i, @j, @last);
+    };
+}
+
+void cspec
+make_compare(void)
+{
+    double vspec a = param(double, 0);
+    double vspec b = param(double, 1);
+
+    return `{
+        return @a < @b;
+    };
+}
+
+void cspec
+make_round_trip(void)
+{
+    double * vspec pointer = param(double *, 0);
+    double vspec replacement = param(double, 1);
+
+    return `{
+        double old = *@pointer;
+        *@pointer = @replacement;
+        return old;
+    };
+}
+
+void cspec
+make_to_int(void)
+{
+    double vspec value = param(double, 0);
+
+    return `{
+        return (int)@value;
+    };
+}
+
+int
+main(void)
+{
+    double (*arithmetic)(long, double, float, double, float, double,
+                         float, double, float, double, float, long);
+    double (*caller)(long, double, float, double, float, double,
+                     float, double, float, double, float, long);
+    double expected;
+    double actual;
+    int (*compare)(double, double);
+    double (*round_trip)(double *, double);
+    int (*to_int)(double);
+    double storage;
+
+    arithmetic = (double (*)(long, double, float, double, float, double,
+                             float, double, float, double, float, long))
+                 compile(make_arithmetic(), double);
+    caller = (double (*)(long, double, float, double, float, double,
+                         float, double, float, double, float, long))
+             compile(make_caller(), double);
+    compare = (int (*)(double, double))compile(make_compare(), int);
+    round_trip = (double (*)(double *, double))
+                 compile(make_round_trip(), double);
+    to_int = (int (*)(double))compile(make_to_int(), int);
+    expected = reference_mixed(1099511627776L, 1.25, -2.5,
+                               3.75, 4.5, -5.25, 6.5, 7.75,
+                               -8.25, 9.5, 10.25, -1099511627700L);
+    actual = arithmetic(1099511627776L, 1.25, -2.5,
+                        3.75, 4.5, -5.25, 6.5, 7.75,
+                        -8.25, 9.5, 10.25, -1099511627700L);
+    if (actual != expected) {
+        printf("arithmetic mismatch: %f != %f\n", actual, expected);
+        return 1;
+    }
+    actual = caller(1099511627776L, 1.25, -2.5,
+                    3.75, 4.5, -5.25, 6.5, 7.75,
+                    -8.25, 9.5, 10.25, -1099511627700L);
+    if (actual != expected) {
+        printf("call mismatch: %f != %f\n", actual, expected);
+        return 1;
+    }
+    if (!compare(-1.5, 2.25) || compare(4.0, 3.0)) {
+        printf("comparison mismatch\n");
+        return 1;
+    }
+    storage = 3.5;
+    if (round_trip(&storage, -7.25) != 3.5 || storage != -7.25) {
+        printf("load/store mismatch: %f\n", storage);
+        return 1;
+    }
+    if (to_int(1234.75) != 1234 || to_int(-1234.75) != -1234) {
+        printf("conversion mismatch\n");
+        return 1;
+    }
+    decompile(arithmetic);
+    decompile(caller);
+    decompile(compare);
+    decompile(round_trip);
+    decompile(to_int);
+    printf("Phase 6B Tick-C tests passed\n");
+    return 0;
+}

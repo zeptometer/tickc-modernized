@@ -1,0 +1,88 @@
+version = 1
+
+# Historical Tick-C/lcc files and architecture ports derived from them use the
+# inherited project terms. Modernization changes within these files are
+# contributed under the same terms instead of adding a second MIT layer.
+[[annotations]]
+path = [
+    "INSTALL",
+    "Makefile.in",
+    "README",
+    "config/configure.in",
+    "config/sys/**",
+    "doc/ChangeLog",
+    "doc/Credits",
+    "include/**",
+    "src/**",
+    "tst/gen-tests.pl",
+    "tst/regress.pl",
+    "tst/phase1/**",
+    "tst/tcc0/**",
+    "tst/tcc1/**",
+    "tst/tcc2/**",
+]
+precedence = "override"
+SPDX-FileCopyrightText = [
+    "1991-1995 AT&T, Christopher W. Fraser, and David R. Hanson",
+    "1996 Massachusetts Institute of Technology",
+]
+SPDX-License-Identifier = "LicenseRef-TCC-1996 AND LicenseRef-LCC-1994"
+
+# Standalone modernization material contains no inherited implementation.
+[[annotations]]
+path = [
+    ".github/**",
+    "NOTICE",
+    "doc/modernization/**",
+    "env/**",
+    "tst/phase5/**",
+    "tst/phase6a/**",
+    "tst/phase6b/**",
+    "tst/phase6c/**",
+    "tst/phase6d/**",
+]
+precedence = "override"
+SPDX-FileCopyrightText = "2026 Yuito Murase"
+SPDX-License-Identifier = "MIT"
+
+# Autoconf-generated configure scripts carry the FSF unlimited grant rather
+# than the surrounding project's terms.
+[[annotations]]
+path = [
+    "configure",
+    "src/bpo/configure",
+    "src/copt/configure",
+    "src/icode/configure",
+    "src/lburg/configure",
+    "src/rcc/configure",
+    "src/rts/configure",
+    "src/sup/configure",
+    "src/tcc/configure",
+]
+precedence = "override"
+SPDX-FileCopyrightText = "Free Software Foundation, Inc."
+SPDX-License-Identifier = "FSFUL"
+
+# GNU config helpers retain GPLv2-or-later plus their embedded generic
+# Autoconf distribution exception.
+[[annotations]]
+path = ["config/config.guess", "config/config.sub"]
+precedence = "override"
+SPDX-FileCopyrightText = "1991-1996 Free Software Foundation, Inc."
+SPDX-License-Identifier = "GPL-2.0-or-later WITH Autoconf-exception-generic"
+
+# This is the byte-identical helper from GNU Automake 1.18.1; its own header
+# preserves the X Consortium notice and identifies later FSF changes as public
+# domain.
+[[annotations]]
+path = "config/install-sh"
+precedence = "override"
+SPDX-FileCopyrightText = "1994 X Consortium"
+SPDX-License-Identifier = "X11"
+
+# The archived lcc documentation is retained under its original terms alone.
+[[annotations]]
+path = "doc/original-lcc/**"
+precedence = "override"
+SPDX-FileCopyrightText = "1991-1995 AT&T, Christopher W. Fraser, and David R. Hanson"
+SPDX-License-Identifier = "LicenseRef-LCC-1994"

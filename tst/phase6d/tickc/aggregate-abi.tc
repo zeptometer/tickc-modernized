@@ -1,0 +1,250 @@
+extern int printf();
+
+struct integer_pair { long first, second; };
+struct float_pair { double first, second; };
+struct mixed_pair { long integer; double floating; };
+struct reverse_mixed_pair { double floating; long integer; };
+struct large_value { long first, second, third; };
+struct nested_value { struct { int first, second; } inner; double value; };
+union integer_union { long integer; double floating; };
+struct union_value { union integer_union value; int tag; };
+struct byte_triple { unsigned char first, second, third; };
+
+extern struct integer_pair reference_integer_pair(struct integer_pair);
+extern struct float_pair reference_float_pair(struct float_pair);
+extern struct mixed_pair reference_mixed_pair(struct mixed_pair);
+extern struct reverse_mixed_pair reference_reverse_mixed_pair(
+    struct reverse_mixed_pair);
+extern struct large_value reference_large_value(struct large_value);
+extern struct nested_value reference_nested_value(struct nested_value);
+extern struct union_value reference_union_value(struct union_value);
+extern struct byte_triple reference_byte_triple(struct byte_triple);
+extern long reference_integer_rollback(long, long, long, long, long,
+    struct integer_pair, long);
+extern double reference_sse_rollback(double, double, double, double,
+    double, double, double, struct float_pair, double);
+
+extern int check_integer_identity();
+extern int check_integer_caller();
+extern int check_integer_constant();
+extern int check_float_identity();
+extern int check_float_caller();
+extern int check_mixed_identity();
+extern int check_mixed_caller();
+extern int check_reverse_identity();
+extern int check_reverse_caller();
+extern int check_large_identity();
+extern int check_large_caller();
+extern int check_nested_identity();
+extern int check_nested_caller();
+extern int check_union_identity();
+extern int check_union_caller();
+extern int check_byte_identity();
+extern int check_byte_caller();
+extern int check_integer_rollback();
+extern int check_sse_rollback();
+
+int verify(int condition, char *name)
+{
+    if (!condition)
+        printf("Phase 6D check failed: %s\n", name);
+    return condition;
+}
+
+struct integer_pair constant_pair = { 21, 22 };
+
+void cspec integer_identity_spec(void) {
+    struct integer_pair vspec value = param(struct integer_pair, 0);
+    return `{ return @value; };
+}
+void cspec integer_caller_spec(void) {
+    struct integer_pair vspec value = param(struct integer_pair, 0);
+    return `{ return reference_integer_pair(@value); };
+}
+void cspec integer_constant_spec(void) {
+    return `{ return constant_pair; };
+}
+void cspec float_identity_spec(void) {
+    struct float_pair vspec value = param(struct float_pair, 0);
+    return `{ return @value; };
+}
+void cspec float_caller_spec(void) {
+    struct float_pair vspec value = param(struct float_pair, 0);
+    return `{ return reference_float_pair(@value); };
+}
+void cspec mixed_identity_spec(void) {
+    struct mixed_pair vspec value = param(struct mixed_pair, 0);
+    return `{ return @value; };
+}
+void cspec mixed_caller_spec(void) {
+    struct mixed_pair vspec value = param(struct mixed_pair, 0);
+    return `{ return reference_mixed_pair(@value); };
+}
+void cspec reverse_identity_spec(void) {
+    struct reverse_mixed_pair vspec value =
+        param(struct reverse_mixed_pair, 0);
+    return `{ return @value; };
+}
+void cspec reverse_caller_spec(void) {
+    struct reverse_mixed_pair vspec value =
+        param(struct reverse_mixed_pair, 0);
+    return `{ return reference_reverse_mixed_pair(@value); };
+}
+void cspec large_identity_spec(void) {
+    struct large_value vspec value = param(struct large_value, 0);
+    return `{ return @value; };
+}
+void cspec large_caller_spec(void) {
+    struct large_value vspec value = param(struct large_value, 0);
+    return `{ return reference_large_value(@value); };
+}
+void cspec nested_identity_spec(void) {
+    struct nested_value vspec value = param(struct nested_value, 0);
+    return `{ return @value; };
+}
+void cspec nested_caller_spec(void) {
+    struct nested_value vspec value = param(struct nested_value, 0);
+    return `{ return reference_nested_value(@value); };
+}
+void cspec union_identity_spec(void) {
+    struct union_value vspec value = param(struct union_value, 0);
+    return `{ return @value; };
+}
+void cspec union_caller_spec(void) {
+    struct union_value vspec value = param(struct union_value, 0);
+    return `{ return reference_union_value(@value); };
+}
+void cspec byte_identity_spec(void) {
+    struct byte_triple vspec value = param(struct byte_triple, 0);
+    return `{ return @value; };
+}
+void cspec byte_caller_spec(void) {
+    struct byte_triple vspec value = param(struct byte_triple, 0);
+    return `{ return reference_byte_triple(@value); };
+}
+void cspec integer_rollback_spec(void) {
+    long vspec a = param(long, 0); long vspec b = param(long, 1);
+    long vspec c = param(long, 2); long vspec d = param(long, 3);
+    long vspec e = param(long, 4);
+    struct integer_pair vspec pair = param(struct integer_pair, 5);
+    long vspec tail = param(long, 6);
+    return `{
+        return reference_integer_rollback(@a, @b, @c, @d, @e,
+                                           @pair, @tail);
+    };
+}
+void cspec sse_rollback_spec(void) {
+    double vspec a = param(double, 0); double vspec b = param(double, 1);
+    double vspec c = param(double, 2); double vspec d = param(double, 3);
+    double vspec e = param(double, 4); double vspec f = param(double, 5);
+    double vspec g = param(double, 6);
+    struct float_pair vspec pair = param(struct float_pair, 7);
+    double vspec tail = param(double, 8);
+    return `{
+        return reference_sse_rollback(@a, @b, @c, @d, @e, @f, @g,
+                                      @pair, @tail);
+    };
+}
+
+int main(void)
+{
+    struct integer_pair (*integer_identity)(struct integer_pair);
+    struct integer_pair (*integer_caller)(struct integer_pair);
+    struct integer_pair (*integer_constant)(void);
+    struct float_pair (*float_identity)(struct float_pair);
+    struct float_pair (*float_caller)(struct float_pair);
+    struct mixed_pair (*mixed_identity)(struct mixed_pair);
+    struct mixed_pair (*mixed_caller)(struct mixed_pair);
+    struct reverse_mixed_pair (*reverse_identity)(struct reverse_mixed_pair);
+    struct reverse_mixed_pair (*reverse_caller)(struct reverse_mixed_pair);
+    struct large_value (*large_identity)(struct large_value);
+    struct large_value (*large_caller)(struct large_value);
+    struct nested_value (*nested_identity)(struct nested_value);
+    struct nested_value (*nested_caller)(struct nested_value);
+    struct union_value (*union_identity)(struct union_value);
+    struct union_value (*union_caller)(struct union_value);
+    struct byte_triple (*byte_identity)(struct byte_triple);
+    struct byte_triple (*byte_caller)(struct byte_triple);
+    long (*integer_rollback)(long, long, long, long, long,
+                             struct integer_pair, long);
+    double (*sse_rollback)(double, double, double, double, double,
+                           double, double, struct float_pair, double);
+
+    integer_identity = (struct integer_pair (*)(struct integer_pair))
+        compile(integer_identity_spec(), struct integer_pair);
+    integer_caller = (struct integer_pair (*)(struct integer_pair))
+        compile(integer_caller_spec(), struct integer_pair);
+    integer_constant = (struct integer_pair (*)(void))
+        compile(integer_constant_spec(), struct integer_pair);
+    float_identity = (struct float_pair (*)(struct float_pair))
+        compile(float_identity_spec(), struct float_pair);
+    float_caller = (struct float_pair (*)(struct float_pair))
+        compile(float_caller_spec(), struct float_pair);
+    mixed_identity = (struct mixed_pair (*)(struct mixed_pair))
+        compile(mixed_identity_spec(), struct mixed_pair);
+    mixed_caller = (struct mixed_pair (*)(struct mixed_pair))
+        compile(mixed_caller_spec(), struct mixed_pair);
+    reverse_identity =
+        (struct reverse_mixed_pair (*)(struct reverse_mixed_pair))
+        compile(reverse_identity_spec(), struct reverse_mixed_pair);
+    reverse_caller =
+        (struct reverse_mixed_pair (*)(struct reverse_mixed_pair))
+        compile(reverse_caller_spec(), struct reverse_mixed_pair);
+    large_identity = (struct large_value (*)(struct large_value))
+        compile(large_identity_spec(), struct large_value);
+    large_caller = (struct large_value (*)(struct large_value))
+        compile(large_caller_spec(), struct large_value);
+    nested_identity = (struct nested_value (*)(struct nested_value))
+        compile(nested_identity_spec(), struct nested_value);
+    nested_caller = (struct nested_value (*)(struct nested_value))
+        compile(nested_caller_spec(), struct nested_value);
+    union_identity = (struct union_value (*)(struct union_value))
+        compile(union_identity_spec(), struct union_value);
+    union_caller = (struct union_value (*)(struct union_value))
+        compile(union_caller_spec(), struct union_value);
+    byte_identity = (struct byte_triple (*)(struct byte_triple))
+        compile(byte_identity_spec(), struct byte_triple);
+    byte_caller = (struct byte_triple (*)(struct byte_triple))
+        compile(byte_caller_spec(), struct byte_triple);
+    integer_rollback =
+        (long (*)(long, long, long, long, long, struct integer_pair, long))
+        compile(integer_rollback_spec(), long);
+    sse_rollback =
+        (double (*)(double, double, double, double, double, double, double,
+                    struct float_pair, double))
+        compile(sse_rollback_spec(), double);
+
+    if (!verify(check_integer_identity(integer_identity), "integer identity") ||
+        !verify(check_integer_caller(integer_caller), "integer caller") ||
+        !verify(check_integer_constant(integer_constant), "result only") ||
+        !verify(check_float_identity(float_identity), "float identity") ||
+        !verify(check_float_caller(float_caller), "float caller") ||
+        !verify(check_mixed_identity(mixed_identity), "mixed identity") ||
+        !verify(check_mixed_caller(mixed_caller), "mixed caller") ||
+        !verify(check_reverse_identity(reverse_identity), "reverse identity") ||
+        !verify(check_reverse_caller(reverse_caller), "reverse caller") ||
+        !verify(check_large_identity(large_identity), "large identity") ||
+        !verify(check_large_caller(large_caller), "large caller") ||
+        !verify(check_nested_identity(nested_identity), "nested identity") ||
+        !verify(check_nested_caller(nested_caller), "nested caller") ||
+        !verify(check_union_identity(union_identity), "union identity") ||
+        !verify(check_union_caller(union_caller), "union caller") ||
+        !verify(check_byte_identity(byte_identity), "odd-size identity") ||
+        !verify(check_byte_caller(byte_caller), "odd-size caller") ||
+        !verify(check_integer_rollback(integer_rollback), "GPR rollback") ||
+        !verify(check_sse_rollback(sse_rollback), "SSE rollback"))
+        return 1;
+
+    decompile(integer_identity); decompile(integer_caller);
+    decompile(integer_constant);
+    decompile(float_identity); decompile(float_caller);
+    decompile(mixed_identity); decompile(mixed_caller);
+    decompile(reverse_identity); decompile(reverse_caller);
+    decompile(large_identity); decompile(large_caller);
+    decompile(nested_identity); decompile(nested_caller);
+    decompile(union_identity); decompile(union_caller);
+    decompile(byte_identity); decompile(byte_caller);
+    decompile(integer_rollback); decompile(sse_rollback);
+    printf("Phase 6D Tick-C aggregate tests passed\n");
+    return 0;
+}

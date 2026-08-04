@@ -1,0 +1,22 @@
+# Building the native x86-64/Linux compiler
+
+The native x86-64/LP64 target is the only maintained configuration. Run its
+complete build and regression suite from the repository root:
+
+```sh
+env/linux-x86_64/scripts/run-tests.sh
+```
+
+This checks both dynamic backends, the SysV AMD64 integer ABI, the
+paper-derived programs, LP64 values, C interoperability, PIE/NX, W^X, and
+ASLR. See `env/linux-x86_64/README.md` and
+`doc/modernization/phase5/README.md` for details and current limitations.
+
+The former i386/ILP32 target is archived at merge commit `d6d848d`, the final
+revision where its complete suite passed alongside x86-64. Its backend,
+container, CI workflow, and target-specific tests are intentionally absent
+from the maintained tree. See `doc/modernization/i386-retirement.md`.
+
+The removed SPARC, MIPS, SStrix, Alpha, DOS, and OpenBSD material remains
+available in Git history. The last merged SStrix baseline is commit
+`edcd4d1`.

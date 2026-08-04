@@ -1,0 +1,19 @@
+extern int printf();
+
+void cspec
+plus1(void)
+{
+    int vspec i = param(int, 0);
+
+    return `{ return @i + 1; };
+}
+
+int
+main(void)
+{
+    int (*f)(int) = compile(plus1(), int);
+
+    printf("%d\n", (*f)(41));
+    decompile(f);
+    return 0;
+}

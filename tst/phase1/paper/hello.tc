@@ -1,0 +1,11 @@
+extern int printf();
+
+int
+main(void)
+{
+    void (*f)() = compile(`{ printf("hello, world\n"); }, void);
+
+    (*f)();
+    decompile(f);
+    return 0;
+}

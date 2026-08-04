@@ -1,0 +1,44 @@
+extern int printf();
+
+static int (*generated_sum)();
+
+void cspec
+construct_sum(int count)
+{
+    int index;
+    int cspec sum = `0;
+
+    for (index = 0; index < count; index++) {
+        int vspec value = param(int, index);
+
+        sum = `(@sum + @value);
+    }
+    return `{ return @sum; };
+}
+
+int cspec
+construct_call(int count, int values[])
+{
+    void cspec arguments = push_init();
+    int index;
+
+    generated_sum = compile(construct_sum(count), int);
+    for (index = 0; index < count; index++)
+        push(arguments, `$values[index]);
+    return `($generated_sum)(@arguments);
+}
+
+int
+main(void)
+{
+    int values[4] = { 3, 1, 4, 1 };
+    int cspec call;
+    int (*caller)();
+
+    call = construct_call(4, values);
+    caller = compile(`{ return @call; }, int);
+    printf("%d\n", (*caller)());
+    decompile(caller);
+    decompile(generated_sum);
+    return 0;
+}

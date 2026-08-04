@@ -1,0 +1,14 @@
+extern int printf();
+
+int
+main(void)
+{
+    void cspec hello = `{ printf("hello "); };
+    void cspec world = `{ printf("world\n"); };
+    void cspec greeting = `{ @hello; @world; };
+    void (*f)() = compile(greeting, void);
+
+    (*f)();
+    decompile(f);
+    return 0;
+}

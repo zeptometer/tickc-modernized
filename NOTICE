@@ -1,0 +1,37 @@
+Tick-C 1.0 beta 9 modernization
+================================
+
+This work is based on Tick-C 1.0 beta 9, originally distributed by the MIT
+Parallel and Distributed Operating Systems group, and on lcc by Christopher
+W. Fraser and David R. Hanson.
+
+The original Tick-C permission notice is preserved at:
+  doc/modernization/phase0/upstream-license-notice.md
+
+The complete lcc copyright and redistribution conditions are preserved at:
+  doc/original-lcc/COPYRIGHT.lcc
+  LICENSES/LicenseRef-LCC-1994.txt
+
+The Tick-C distribution permission notice is preserved at:
+  LICENSES/LicenseRef-TCC-1996.txt
+
+Standalone modernization files identified in `REUSE.toml` are licensed under
+the MIT License preserved at:
+  LICENSES/MIT.txt
+
+Modernization changes to historical files and architecture files derived from
+historical implementations inherit the Tick-C and lcc conditions rather than
+adding a separate MIT layer.
+
+The `config/install-sh` fallback is taken from GNU Automake 1.18.1. Its
+X Consortium permission notice and the public-domain status of later Free
+Software Foundation changes are preserved in that file.
+
+This modernization is maintained for research and instruction. Its approved
+publication scope is free source distribution under the inherited Tick-C and
+lcc conditions; sale, commercial permission, binaries, packages, CI artifacts,
+and container images are not part of that approval.
+
+Additional copyright and permission notices appear in individual files. See
+LICENSE.md and doc/modernization/release/source-inventory.md before copying or
+redistributing this repository.

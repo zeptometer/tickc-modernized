@@ -1,0 +1,160 @@
+extern int printf();
+extern long reference_mix(long, int);
+extern long reference_conversion(long, int);
+extern long reference_deep(long, long, long, long,
+                           long, long, long, long);
+
+void cspec
+make_mix(void)
+{
+    long vspec value = param(long, 0);
+    int vspec count = param(int, 1);
+
+    return `{
+        long result = @value;
+        int i;
+
+        for (i = 0; i < @count; i++) {
+            if (result & 1)
+                result = result * 3 + 1;
+            else
+                result = result / 2;
+        }
+        return result;
+    };
+}
+
+void cspec
+make_conversions(void)
+{
+    long vspec value = param(long, 0);
+    int vspec kind = param(int, 1);
+
+    return `{
+        signed char c = @value;
+        unsigned char uc = @value;
+        short s = @value;
+        unsigned short us = @value;
+        int i = @value;
+        unsigned int u = @value;
+
+        if (@kind == 0) return (long)c;
+        if (@kind == 1) return (long)uc;
+        if (@kind == 2) return (long)s;
+        if (@kind == 3) return (long)us;
+        if (@kind == 4) return (long)i;
+        return (long)u;
+    };
+}
+
+void cspec
+make_pointer_round_trip(void)
+{
+    long * vspec pointer = param(long *, 0);
+    long vspec value = param(long, 1);
+
+    return `{
+        long old = *@pointer;
+        *@pointer = @value;
+        return old;
+    };
+}
+
+void cspec
+make_deep_expression(void)
+{
+    long vspec a = param(long, 0);
+    long vspec b = param(long, 1);
+    long vspec c = param(long, 2);
+    long vspec d = param(long, 3);
+    long vspec e = param(long, 4);
+    long vspec f = param(long, 5);
+    long vspec g = param(long, 6);
+    long vspec h = param(long, 7);
+
+    return `{
+        return (((@a + @b) * (@c - @d)) ^ ((@e | @f) & (@g + @h))) +
+               1099511627776L;
+    };
+}
+
+int
+main(void)
+{
+    long values[9];
+    int i;
+
+    values[0] = (-9223372036854775807L - 1L);
+    values[1] = -32769;
+    values[2] = -129;
+    values[3] = -1;
+    values[4] = 0;
+    values[5] = 127;
+    values[6] = 255;
+    values[7] = 32768;
+    values[8] = 9223372036854775807L;
+
+    for (i = 0; i < 9; i++) {
+        int kind;
+        long (*converted)(long, int);
+
+        converted = compile(make_conversions(), long);
+        for (kind = 0; kind < 6; kind++) {
+            long actual = converted(values[i], kind);
+            long expected = reference_conversion(values[i], kind);
+
+            if (actual != expected) {
+                printf("conversion failure %d/%d: %ld != %ld\n",
+                       i, kind, actual, expected);
+                return 1;
+            }
+        }
+        decompile(converted);
+    }
+
+    for (i = 0; i < 40; i++) {
+        long (*mixed)(long, int) = compile(make_mix(), long);
+        long input = 1099511627776L + i;
+        long actual = mixed(input, 17);
+        long expected = reference_mix(input, 17);
+
+        if (actual != expected) {
+            printf("control-flow failure %d: %ld != %ld\n", i,
+                   actual, expected);
+            return 1;
+        }
+        decompile(mixed);
+    }
+
+    {
+        long storage = (-9223372036854775807L - 1L);
+        long replacement = 9223372036854775807L;
+        long (*round_trip)(long *, long) =
+            compile(make_pointer_round_trip(), long);
+        long old = round_trip(&storage, replacement);
+
+        if (old != (-9223372036854775807L - 1L) || storage != replacement)
+            return 1;
+        decompile(round_trip);
+    }
+
+    {
+        long (*deep)(long, long, long, long, long, long, long, long);
+        long actual;
+        long expected;
+
+        deep = compile(make_deep_expression(), long);
+        actual = deep(1, -2, 3, -4, 5, -6, 7, 1099511627784L);
+        expected = reference_deep(1, -2, 3, -4, 5, -6, 7,
+                                  1099511627784L);
+
+        if (actual != expected) {
+            printf("deep expression failure: %ld != %ld\n", actual, expected);
+            return 1;
+        }
+        decompile(deep);
+    }
+
+    printf("Phase 6A Tick-C tests passed\n");
+    return 0;
+}

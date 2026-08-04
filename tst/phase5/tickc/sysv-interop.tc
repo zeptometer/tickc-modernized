@@ -1,0 +1,57 @@
+extern int printf();
+
+static long
+sum8(long a, long b, long c, long d, long e, long f, long g, long h)
+{
+    return a + b + c + d + e + f + g + h;
+}
+
+static long (*generated_sum8)();
+static long (*sum8_pointer)() = sum8;
+
+long cspec
+make_call(void)
+{
+    void cspec arguments = push_init();
+
+    push(arguments, `1L);
+    push(arguments, `2L);
+    push(arguments, `3L);
+    push(arguments, `4L);
+    push(arguments, `5L);
+    push(arguments, `6L);
+    push(arguments, `7L);
+    push(arguments, `8L);
+    return `($sum8_pointer)(@arguments);
+}
+
+void cspec
+make_sum8(void)
+{
+    long vspec a = param(long, 0);
+    long vspec b = param(long, 1);
+    long vspec c = param(long, 2);
+    long vspec d = param(long, 3);
+    long vspec e = param(long, 4);
+    long vspec f = param(long, 5);
+    long vspec g = param(long, 6);
+    long vspec h = param(long, 7);
+
+    return `{ return @a + @b + @c + @d + @e + @f + @g + @h; };
+}
+
+int
+main(void)
+{
+    long (*caller)(void) = compile(`{ return @make_call(); }, long);
+    long direct;
+    long called;
+
+    generated_sum8 = compile(make_sum8(), long);
+    direct = generated_sum8(1, 2, 3, 4, 5, 6, 7, 8);
+    called = caller();
+    printf("%ld %ld\n", direct, called);
+    decompile(caller);
+    decompile(generated_sum8);
+    return direct != 36 || called != 36;
+}
