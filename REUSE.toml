@@ -7,7 +7,7 @@ version = 1
 path = [
     "INSTALL",
     "Makefile.in",
-    "README",
+    "README.orig",
     "config/configure.in",
     "config/sys/**",
     "doc/ChangeLog",
@@ -33,6 +33,7 @@ SPDX-License-Identifier = "LicenseRef-TCC-1996 AND LicenseRef-LCC-1994"
 path = [
     ".github/**",
     "NOTICE",
+    "README.md",
     "doc/modernization/**",
     "env/**",
     "tst/phase5/**",

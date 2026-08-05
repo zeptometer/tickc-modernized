@@ -14,7 +14,7 @@ assert that every item is a defect in the original supported environment.
   `/home/butt/maxp`, `/usr/uns`, and `/usr/local`.
 - `src/copt/config.cache`, `config.log`, and `config.status` are committed
   residue from a historical configure run.
-- Empty installation directories described by `README` (`bin`, `build`, and
+- Empty installation directories described by `README.orig` (`bin`, `build`, and
   `lib`) are naturally absent from the tar archive and Git.
 
 ## Sanitization effects

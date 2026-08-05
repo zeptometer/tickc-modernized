@@ -48,7 +48,7 @@ serving as a repository-wide file inventory.
 
 | Paths | Role | Included in a normal build or test? |
 |---|---|---|
-| `README`, `INSTALL`, `LICENSE.md`, `NOTICE` | User, build, and distribution notices | Read-only documentation |
+| `README.md`, `README.orig`, `INSTALL`, `LICENSE.md`, `NOTICE` | User, historical, build, and distribution notices | Read-only documentation |
 | `Makefile.in`, `configure`, `config/**` | Top-level configuration and build support | Yes |
 | `include/**` | Maintained x86-64/Linux Tick-C headers | Installed by the build |
 | `src/bpo/**` | Binary peephole optimizer | Yes |

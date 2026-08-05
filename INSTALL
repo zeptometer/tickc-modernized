@@ -1,16 +1,44 @@
 # Building the native x86-64/Linux compiler
 
-The native x86-64/LP64 target is the only maintained configuration. Run its
-complete build and regression suite from the repository root:
+The native x86-64/LP64 target is the only maintained configuration. To build
+and install it directly on a Debian-compatible x86-64 Linux host, install the
+build dependencies first. For Debian and Ubuntu, use:
 
 ```sh
-env/linux-x86_64/scripts/run-tests.sh
+sudo apt-get install \
+    binutils bison diffutils file flex gcc libc6-dev make patch perl \
+    xutils-dev
 ```
 
-This checks both dynamic backends, the SysV AMD64 integer ABI, the
-paper-derived programs, LP64 values, C interoperability, PIE/NX, W^X, and
-ASLR. See `env/linux-x86_64/README.md` and
-`doc/modernization/phase5/README.md` for details and current limitations.
+Configure out of tree, create the installation directories expected by the
+historical build system, and build with the supplied GCC wrapper:
+
+```sh
+source_dir=$PWD
+build_dir=/tmp/tickc-build
+prefix=/tmp/tickc-install
+
+mkdir -p "$build_dir" "$prefix/build" "$prefix/bin" "$prefix/lib"
+cd "$build_dir"
+
+"$source_dir/configure" \
+    --build=x86_64-pc-linux-gnu \
+    --host=x86_64-pc-linux-gnu \
+    --target=x86_64-pc-linux-gnu \
+    --prefix="$prefix"
+
+make MODE=debug CC="$source_dir/env/linux-x86_64/scripts/gcc-wrapper.sh"
+```
+
+Run these commands from the repository root so that `source_dir` identifies
+the source tree. The installed compiler is `$prefix/bin/tcc` (with the values
+above, `/tmp/tickc-install/bin/tcc`). Use `MODE=optimize` for an optimized
+build.
+
+The wrapper selects GNU C89 for historical configure checks and source files.
+Passing `CC=gcc` directly can fail with current GCC releases because those
+checks contain implicit `int` declarations that newer default language modes
+reject.
 
 The former i386/ILP32 target is archived at merge commit `d6d848d`, the final
 revision where its complete suite passed alongside x86-64. Its backend,
