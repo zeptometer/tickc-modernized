@@ -91,8 +91,6 @@ install:
 		echo \# Include dir \"$(includedir)\" not found: creating it; \
 		$(MKDIR) $(includedir)/tickc; \
 	fi; \
-	cp $(srcdir)/include/tickc/x86_64/stdarg.real.h \
-		$(includedir)/stdarg.real.h; \
 	if [ ! -d $(prefix)/tst ]; then \
 		echo \# Test dir not found: creating $(prefix)/tst; \
 		$(MKDIR) $(prefix)/tst; cd $(prefix)/tst; \

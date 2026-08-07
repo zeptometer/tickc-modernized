@@ -86,15 +86,13 @@ static List rmlist;		/* list of files to remove */
 static char *outfile;		/* ld output file or -[cS] object file */
 static int ac;			/* argument count */
 static char **av;		/* argument vector */
-static char tempname[80];	/* temporary .s file */
-static char btempname[80];	/* temporary .s.b file */
-static char ctempname[80];	/* temporary .s.b file (optimized .s.b) */
+static char tempname[80];	/* temporary file presented to cc2 as .s */
+static char btempname[80];	/* unoptimized generated C */
+static char ctempname[80];	/* optimized generated C */
 static char *progname;
 
-/* Stuff to deal with `C-C back ends */
+/* The maintained compiler always uses the C-to-C static path. */
 static int peepholep = 1;
-static int cbackendp = 1;
-static char * const cbackends[] = { "c-x86_64", 0 };
 static List glist;		/* compiler flags for cc2 */
 
 /*char *po[] = { _TICKC_LIB"/copt", _TICKC_LIB"/rules.copt", "<", "$1",
@@ -145,22 +143,6 @@ int main(argc, argv) int argc; char *argv[];
 		    error("unrecognized option `%s'", argv[i]);
 		    exit(8);
 	       }
-	  } else if (strncmp(argv[i], "-target", 7) == 0) {
-	       int j;
-#ifdef sun
-	       if (strcmp(argv[i], "-target") == 0) {
-		    if (argv[i+1] && *argv[i+1] != '-')
-			 i++;
-		    continue;
-	       }
-#endif
-	       for (j = 0; cbackends[j]; j++)
-		    if (strstr(argv[i], cbackends[j])) {
-			 cbackendp = 1;
-			 break;
-		    }
-	       opt(argv[i]);
-	       continue;
 	  } else if (*argv[i] == '-' && argv[i][1] != 'l') {
 	       opt(argv[i]);
 	       continue;
@@ -416,11 +398,7 @@ static int filename(name, base) char *name, *base;
      case 'c':
 	  if (! exists(name))
 	       break;
-	  if (! cbackendp)
-	       plist = append(_TICKC_INC"/stdarg.real.h", 
-			      append("-include", plist));
-	  else
-	       plist = append("-D__C2C__", plist);
+	  plist = append("-D__C2C__", plist);
 	  compose(cpp, plist, append(name, 0), 0);
 	  if (Eflag) {
 	       status = callsys(av);
@@ -512,11 +490,9 @@ static int filename(name, base) char *name, *base;
 	  char *ofile;
 	  if (Eflag || Sflag)
 	       break;
-	  if (cbackendp) {
-	       compose(cc2, glist, append(ctempname, 0), append(name, 0));
-	       if ((status = callsys(av)) != 0)
-		    break;
-	  }
+	  compose(cc2, glist, append(ctempname, 0), append(name, 0));
+	  if ((status = callsys(av)) != 0)
+	       break;
 	  ofile = cflag && outfile ? outfile : concat(base, ".o");
 	  compose(as, alist, append(name, 0), append(ofile, 0));
 	  status = callsys(av);
@@ -565,7 +541,7 @@ static void help()
   "-A	warn about non-ANSI usage; 2nd -A warns more\n",
   "-b	emit expression-level profiling code; see bprint(1)\n",
   "-Bdir/	use the compiler named `dir/rcc'\n",
-  "-C	compile `C using C backend\n",
+  "-C	accepted for compatibility; the C backend is always used\n",
   "-c	compile only\n",
   "-dn	set switch statement density to `n'\n",
   "-Dname -Dname=def	define the preprocessor symbol `name'\n",
@@ -577,7 +553,7 @@ static void help()
   "-lx	search library `x'\n",
   "-N	do not search the standard directories for #include files\n",
   "-n	emit code to check for dereferencing zero pointers\n",
-  "-nsp turn off static peephole opts (n(o)s(tatic)p(eephole))\n",
+  "-nsp turn off generated-code peephole optimization\n",
   "-O   is ignored\n",
   "-o file	leave the output in `file'\n",
   "-P	print ANSI-style declarations for globals\n",
@@ -704,20 +680,9 @@ static void opt(arg) char *arg;
 	  case 'S':
 	       Sflag++;
 	       return;
-	  case 'C': {
-	       int j;
-	       for (j = 0; cbackends[j]; j++)
-		    if (strstr(com[1], cbackends[j]+2)) {
-			 cbackendp++;
-			 opt(concat("-target=", cbackends[j]));
-			 break;
-		    }
-	       if (! cbackendp) {
-		    error("no `C-C backend exists for this platform", "");
-		    exit(1);
-	       }
+	  case 'C':
+	       /* Historical compatibility option.  C-to-C is now unconditional. */
 	       return;
-	  }
 	  case 'O':
 	       fprintf(stderr, "%s: %s ignored\n", progname, arg);
 	       return;

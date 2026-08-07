@@ -16,9 +16,6 @@ static char templatermcmd[] = "rm %s";
 static char templatemvcmd[] = "mv %s %s";
 static char templatecatcmd[] = "cat ";
 
-static char templatecppcmd[] = _TICKC_CPP" -undef -D"_TARGET
-  " -I"_TICKC_INC"/tickc -imacros "_TICKC_INC"/tickc/tickc-macros.h %s > %s";
-
 Interface *IR = NULL;
 Interface *sIR = NULL;
 Interface *dIR = NULL;
@@ -113,37 +110,8 @@ int main(argc, argv) int argc; char *argv[]; {
      close(infd);
      close(dcgfd);
      if (eval.tExists && !cbe.have) {
-	  if (errcnt)
-	       fprint(2, "Not compiling CGFs because of errors.\n");
-	  else {
-	       eval.tExists = 0;
-	       eval.tCompiling = 1;
-	       if (dflag) {
-		    fprint(2, "Emitted CGFs.\n");
-	       } else {
-		    char *tmpfile = stringf("%s.tmp", dcgfile);
-
-		    if (verbose)
-			 fprint(2, "Preprocessing CGFs.\n");
-		    system(stringf(templatecppcmd, dcgfile, tmpfile));
-
-		    if ((infd = open(tmpfile, 0)) < 0) {
-			 fprint(2, "%s: can't read `%s'\n", argv[0], tmpfile);
-			 system(stringf(templatermcmd, tmpfile));
-			 exit(1);
-		    }
-		    inputInit();
-		    t = gettok();
-		    if (verbose)
-			 fprint(2, "Compiling CGFs.  ");
-		    program();
-		    eval.tCompiling = 0;
-		    close(infd);
-		    system(stringf(templatermcmd, tmpfile));
-		    if (verbose)
-			 fprint(2, "Done.\n");
-	       }
-	  }
+	  fprint(2, "Tick-C quotations require the x86_64-linux C backend.\n");
+	  errcnt++;
      } else if (cbe.have) {
 	  char *tmpfile = stringf("%s.tmp", dcgfile);
 	  if (verbose)
@@ -332,7 +300,7 @@ static void typestab (Symbol p, void *cl) {
 	  (*IR->stabtype)(p);
 }
 
-/* envInit: read standard `C environment, and decide which back end to use */
+/* envInit: read the standard `C environment and select the dynamic backend */
 static void envInit (int argc, char *argv[]) {
      if ((infd = open(envfile, 0)) < 0) {
 	  fprint(2, "%s: can't read `%s'\n", argv[0], envfile);

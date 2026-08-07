@@ -7,7 +7,7 @@ char *cpp[] = { _TICKC_CPP, "-undef",
 
 char *include[] = { "-I"_TICKC_INC"/tickc", 0 };
 
-char *com[] = { _TICKC_COM, "-target=c-x86_64", "$1", "$2", "$3", 0 };
+char *com[] = { _TICKC_COM, "-target=x86_64-linux", "$1", "$2", "$3", 0 };
 
 char *as[] = { _TICKC_AS, "--64", "-o", "$3", "$1", "$2", 0 };
 
