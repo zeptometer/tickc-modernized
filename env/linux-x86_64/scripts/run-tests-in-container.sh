@@ -169,6 +169,21 @@ run_logged "$work_dir/build.log" \
     make MODE="$build_mode" CC="$cc"
 assert_elf64_pie_nx "$prefix/bin/tcc"
 
+echo "Checking the fixed C-to-C driver path"
+compat_output="$work_dir/c-backend-compat"
+run_logged "$compat_output.compile.log" run_checked \
+    "$prefix/bin/tcc" -v -C -o "$compat_output" \
+    "$source_dir/tst/phase1/paper/hello.tc"
+grep -q -- '-target=x86_64-linux' "$compat_output.compile.log"
+if grep -q -- '-target=c-x86_64' "$compat_output.compile.log"; then
+    echo "The driver unexpectedly selected the legacy c-x86_64 alias" >&2
+    exit 1
+fi
+assert_elf64_pie_nx "$compat_output"
+run_test_program "$compat_output" >"$compat_output.stdout"
+diff -u "$source_dir/tst/phase1/paper/hello.stdout" \
+    "$compat_output.stdout"
+
 echo "Checking the x86-64 encoder and SysV integer ABI"
 for test_name in basic encoding; do
     "$cc" -std=gnu99 -Wall -Wextra -Werror -fPIE -pie \

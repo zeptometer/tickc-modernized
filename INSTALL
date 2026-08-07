@@ -40,6 +40,12 @@ Passing `CC=gcc` directly can fail with current GCC releases because those
 checks contain implicit `int` declarations that newer default language modes
 reject.
 
+The installed driver always uses the `x86_64-linux` target. Static Tick-C code
+is translated to C and compiled by the configured host C compiler. The legacy
+`-C` option is still accepted for compatibility but no longer selects a
+different backend. The internal `c-x86_64` name remains an `rcc` compatibility
+alias and is not a separate supported target.
+
 The former i386/ILP32 target is archived at merge commit `d6d848d`, the final
 revision where its complete suite passed alongside x86-64. Its backend,
 container, CI workflow, and target-specific tests are intentionally absent

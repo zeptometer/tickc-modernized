@@ -4,15 +4,21 @@ This repository modernizes Tick-C 1.0 beta 9 for native x86-64 Linux. Tick-C
 extends C with runtime code generation: a program can construct and compile
 typed code quotations, then call the generated code in the same process.
 
-Tick-C is based on lcc and includes a compiler driver, a C frontend and static
-C backend, two dynamic compilation paths, runtime support, and a native
-x86-64 machine-code emitter. The modernization preserves the historical
-language while making the compiler buildable and testable with a current GCC,
-glibc, and SysV AMD64 environment.
+Tick-C is based on lcc and includes a compiler driver, a C frontend and C-to-C
+static path, two dynamic compilation paths, runtime support, and a native
+x86-64 machine-code emitter. Static program code is emitted as C and compiled
+by the host C compiler; only quoted dynamic code is emitted directly as x86-64
+machine code. The modernization preserves the historical language while making
+the compiler buildable and testable with a current GCC, glibc, and SysV AMD64
+environment.
 
 ## Current scope
 
 - Native x86-64 Linux with the LP64 data model is the only maintained target.
+- The canonical compiler target is `x86_64-linux`; `c-x86_64` remains a
+  compatibility alias for direct `rcc` use.
+- The legacy `tcc -C` option is accepted as a no-op because the C-to-C static
+  path is now unconditional.
 - Dynamic compilation is available through the icode and direct-vcode paths.
 - The SysV AMD64 implementation covers integer, pointer, scalar floating-point,
   variadic scalar, and aggregate calling conventions.
